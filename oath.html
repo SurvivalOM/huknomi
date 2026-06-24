@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Take the Hu-Kno-Mian Oath — read Hu-Kno-Mi, make it yours, and be honoured as a Hu-Kno-Mian with your own certificate.">
+<meta name="description" content="Take the Hu-Kno-Mian Oath — read Hu-Kno-Mi, make it yours, and be honoured as a Hu-Kno-Mian with your own numbered certificate.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230f2b4a'/><text x='32' y='42' font-size='30' text-anchor='middle' fill='%23c2a24e' font-family='Georgia,serif' font-weight='bold'>H</text></svg>">
 <title>Become a Hu-Kno-Mian — take the oath</title>
 <style>
@@ -37,7 +37,6 @@
   .take:hover{background:var(--gold2)} .take[disabled]{opacity:.55; cursor:default}
   .msg{font-size:14px; margin-top:10px; text-align:center; min-height:1.2em}
   .msg.err{color:#a3331f} .msg.ok{color:#1d6e2a}
-  /* certificate */
   #certWrap{display:none; margin-top:30px}
   .certificate{background:var(--panel); border:2px solid var(--gold); border-radius:14px; padding:30px 28px; text-align:center; position:relative; box-shadow:0 16px 40px rgba(15,43,74,.22)}
   .certificate:before{content:""; position:absolute; inset:9px; border:1px solid var(--gold2); border-radius:9px; pointer-events:none}
@@ -46,7 +45,8 @@
   .cert-line{font-size:15px; color:var(--muted); margin:14px 0 4px}
   .cert-name{font-size:30px; color:var(--navy); font-weight:700; margin:2px 0}
   .cert-as{font-size:14px; color:var(--muted); margin:8px 0 2px}
-  .cert-title{font-size:26px; color:var(--gold); letter-spacing:.05em; font-weight:700; margin:0 0 10px}
+  .cert-title{font-size:26px; color:var(--gold); letter-spacing:.05em; font-weight:700; margin:0}
+  .cert-no{font-size:14px; color:var(--navy); letter-spacing:.14em; margin:2px 0 10px; font-weight:700}
   .cert-body{font-size:15px; color:#2a3a48; max-width:30em; margin:6px auto; line-height:1.6; font-style:italic}
   .cert-foot{display:flex; justify-content:space-between; align-items:flex-end; margin-top:22px; font-size:13px; color:var(--muted)}
   .cert-foot .sig{border-top:1px solid var(--rule); padding-top:5px; min-width:150px}
@@ -75,7 +75,7 @@
   </div>
 
   <div class="wrap">
-    <p class="lead">You've walked through the book. Taking the Hu-Kno-Mian Oath is the moment you make it your own — and you are honoured, by name, as a <strong>Hu-Kno-Mian</strong>, with a certificate of your own.</p>
+    <p class="lead">You've walked through the book. Taking the Hu-Kno-Mian Oath is the moment you make it your own — and you are honoured, by name and number, as a <strong>Hu-Kno-Mian</strong>, with a certificate of your own.</p>
 
     <div class="badgenote">This is one honour among many. Each book in the movement carries its own oath and its own title — <b>Future Proofer</b>, <b>Hu-Kno-Mian</b>, and more to come. Earn them as you grow, and wear them together.</div>
 
@@ -105,8 +105,9 @@
         <div class="cert-org">Future Proofing Lifestyle</div>
         <div class="cert-line">This certifies that</div>
         <div class="cert-name" id="certName">&nbsp;</div>
-        <div class="cert-as">has read Hu-Kno-Mi and taken the oath — and is honoured as a</div>
+        <div class="cert-as">has read Hu-Kno-Mi and taken the oath — and is honoured as</div>
         <div class="cert-title">Hu-Kno-Mian</div>
+        <div class="cert-no" id="certNo">&nbsp;</div>
         <div class="cert-body">To know better, earn cleanly, and lift the next person — Educate, Empower, Enlighten.</div>
         <div class="cert-foot">
           <div class="sig" id="certDate">&nbsp;</div>
@@ -122,7 +123,7 @@
   </div>
 
 <script>
-/* Paste the Google Apps Script /exec URL for the "Hu-Kno-Mians" sheet here, then re-publish. */
+/* Apps Script /exec URL for the "Hu-Kno-Mians" sheet. */
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzGpq-Z6ZI0rxY66NVybAoGPPPXgD8pdwvZ47GpH9GoYcdiv4maor8NUXR5dDK3zf7CuQ/exec";
 
 var msgEl=document.getElementById('msg'), btn=document.getElementById('takeBtn');
@@ -131,8 +132,9 @@ function fmtDate(){
   var d=new Date(), m=["January","February","March","April","May","June","July","August","September","October","November","December"];
   return d.getDate()+" "+m[d.getMonth()]+" "+d.getFullYear();
 }
-function award(name){
+function award(name, num){
   document.getElementById('certName').textContent = name || 'A Hu-Kno-Mian';
+  document.getElementById('certNo').textContent = num ? ('No. ' + num) : '';
   document.getElementById('certDate').textContent = fmtDate();
   document.getElementById('certWrap').style.display='block';
   document.getElementById('certWrap').scrollIntoView({behavior:'smooth', block:'start'});
@@ -145,11 +147,11 @@ document.getElementById('oathForm').addEventListener('submit', function(e){
   if(!email || email.indexOf('@')<1){ msg('Please enter a valid email.','err'); return; }
   if(!document.getElementById('ag').checked){ msg('Please tick the box to take the oath.','err'); return; }
   btn.disabled=true; msg('Recording your oath…');
-  function done(){ msg('Welcome, Hu-Kno-Mian. Your certificate is below.','ok'); award(name); }
+  function done(num){ msg('Welcome, Hu-Kno-Mian. Your certificate is below.','ok'); award(name, num); }
   if(!SCRIPT_URL){ done(); return; }
   fetch(SCRIPT_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
     body: JSON.stringify({name:name, email:email, source:'huknomi-oath'})})
-   .then(function(r){return r.json();}).then(function(){ done(); }).catch(function(){ done(); });
+   .then(function(r){return r.json();}).then(function(j){ done(j && j.number); }).catch(function(){ done(); });
 });
 </script>
 </body>
